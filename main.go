@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"io"
+	"io/ioutil"
 
 )
 
@@ -22,10 +23,17 @@ func dirRoot(write http.ResponseWriter, req *http.Request) {
 	hasQueryTwo := req.URL.Query().Has("QueryTwo")
 	QueryTwo := req.URL.Query().Get("QueryTwo")
 
-	fmt.Printf("%s: /root directory request received\n QueryOne(%t)=%s, QueryTwo(%t)=%s\n", 
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		fmt.Printf("Could not read request body. Error given: %s\n", err)
+	}
+
+
+	fmt.Printf("%s: /root directory request received\n QueryOne(%t)=%s, QueryTwo(%t)=%s, Req Body: \n %s \n", 
 		cntx.Value(keyServerAddr),
 		hasQueryOne, QueryOne,
-		hasQueryTwo, QueryTwo)
+		hasQueryTwo, QueryTwo, 
+		body)
 	io.WriteString(write, "Content served to the browser from root directory\n" )
 }
 
