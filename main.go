@@ -42,7 +42,14 @@ func dirTest(write http.ResponseWriter, req *http.Request) {
 	cntx := req.Context()
 
 	fmt.Printf("%s: /test directory request received\n", cntx.Value(keyServerAddr))
-	io.WriteString(write, "Content served at route /test\n" )
+
+	thisName := req.PostFormValue("thisName")
+	if thisName == "" {
+		write.Header().Set("x-missing-filed", "thisName")
+		write.WriteHeader(http.StatusBadRequest)
+		return 		
+	}
+	io.WriteString(write, fmt.Sprintf("Hello, %s \n", thisName))
 }
 
 func main() {
